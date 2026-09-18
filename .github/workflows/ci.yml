@@ -1,0 +1,23 @@
+name: Validate stack
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate Compose file
+        run: docker compose config --quiet
+      - name: Validate shell script
+        run: sh -n scripts/smoke.sh
+      - name: Validate PHP syntax
+        run: |
+          php -l app/public/index.php
+          php -l app/healthz.php
+          php -l app/worker.php
